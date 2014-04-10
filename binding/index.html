@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Binding</title>
+</head>
+<body>
+    
+    <div id="view">
+        <form action="">
+            
+            <input type="text" data-bind="value:username">
+            <input type="text" data-bind="value:password">
+            <input type="submit">
+
+        </form>
+    </div>
+
+<script>
+(function() {
+    "use strict";
+
+    var Observable = function() {
+
+    };
+
+    Observable.prototype = {
+        on: function() {
+            
+        }
+    };
+
+    var View = function() {
+
+    };
+
+    var el = document.getElementById('view');
+})();  
+</script>
+</body>
+</html>
