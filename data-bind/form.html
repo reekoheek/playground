@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Form Binding</title>
+</head>
+<body>
+
+<form id="the-o" data-name="Jafar" data-age="30">
+    <input type="text" data-bind="name" placeholder="Name">
+    <input type="text" data-bind="age" placeholder="Age">
+    <input type="submit">
+</form>
+
+<script src="js/underscore.js"></script>
+<script src="js/backbone.js"></script>
+<script>
+
+(function() {
+    "use strict";
+
+    var r = {
+        trigger: function(el, eventName) {
+            var evt = document.createEvent('HTMLEvents');
+            evt.initEvent(eventName, true, true);
+            evt.eventName = eventName;
+            el.dispatchEvent(evt);
+        }
+    };
+
+    var O = function() {
+
+    };
+
+    _.extend(O.prototype, Backbone.Events, {
+        set: function(key, value) {
+            if (typeof key === 'object') {
+                for(var i in key) {
+                    this.set(i, key[i]);
+                }
+            } else {
+                this[key] = value;
+                this.trigger('change', key);
+            }
+            return this;
+        },
+
+        get: function(key) {
+            return this[key];
+        }
+    });
+
+    var View = function(el) {
+        this.initialize.apply(this, arguments);
+    };
+
+    _.extend(View.prototype, O.prototype, {
+        initialize: function(el) {
+            this.el = el;
+
+            this.el.addEventListener('change', _.bind(this.bindChanged, this));
+            this.on('change', this.handleChanged, this);
+
+            this.set(el.dataset);
+        },
+
+        handleChanged: function(key) {
+            var els;
+            if (key) {
+                els = this.el.querySelectorAll('[data-bind=' + key + ']');
+            } else {
+                els = this.el.querySelectorAll('[data-bind]');
+            }
+            for(var i = 0; i < els.length; i++) {
+                var el = els.item(i),
+                    k = el.dataset.bind;
+                if (this[k] !== el.value) {
+                    el.value = this[k];
+                    r.trigger(el, 'change');
+                }
+            }
+        },
+
+        bindChanged: function(evt) {
+            var bindKey = evt.target.dataset.bind,
+                value = evt.target.value;
+            if (bindKey) {
+                this.set(bindKey, value);
+            }
+        }
+    });
+
+    window.view = new View(document.getElementById('the-o'));
+})();
+</script>
+
+</body>
+</html>
